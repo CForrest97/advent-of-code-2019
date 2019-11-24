@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/CForrest97/advent-of-code#readme",
   "dependencies": {
-    "fs-extra": "^8.1.0",
     "immutable": "^4.0.0-rc.12"
   },
   "devDependencies": {
