@@ -7,7 +7,7 @@ import {
   findUncontestedClaim,
 } from "../src/noMatterHowYouSliceIt";
 
-describe("day 1 - No Matter How You Slice It", () => {
+describe("day 3 - No Matter How You Slice It", () => {
   describe("part 1", () => {
     test("should count overlap with 3 claims", () => {
       const input = List([

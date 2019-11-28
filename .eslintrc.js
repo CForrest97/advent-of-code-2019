@@ -24,7 +24,8 @@ module.exports = {
   rules: {
     "quotes": ["error", "double"],
     "arrow-parens": ["error", "as-needed"],
-    "no-constant-condition": ["error", { "checkLoops": false }]
+    "no-constant-condition": ["error", { "checkLoops": false }],
+    "prefer-const": ["error", { "destructuring": "all", "ignoreReadBeforeAssign": false }]
   },
   "settings": {
     "import/resolver": {

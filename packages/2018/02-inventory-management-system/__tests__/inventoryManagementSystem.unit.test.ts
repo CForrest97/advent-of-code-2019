@@ -8,7 +8,7 @@ import {
   findCommonCharacters,
 } from "../src/inventoryManagementSystem";
 
-describe("day 1 - Chronal Calibration", () => {
+describe("day 2 - Inventory Management System", () => {
   describe("part 1", () => {
     test("should count pairs and triplets from abcdef", () => {
       const input = List("abcdef".split(""));
