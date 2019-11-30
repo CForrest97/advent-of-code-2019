@@ -1,19 +1,21 @@
-import { Map, Set} from "immutable";
+import { Set } from "immutable";
 import Node from "./Node";
 
 export default class Graph {
-  private availableNodes: Set<Node> = Set();
+  unvisitedNodes: Set<Node> = Set();
+
+  inProgressNodes: Set<Node> = Set();
 
   private visitedNodes: Set<Node> = Set();
 
   public addNode(id) {
     if (!this.getNode(id)) {
-      this.availableNodes = this.availableNodes.add(new Node(id));
+      this.unvisitedNodes = this.unvisitedNodes.add(new Node(id));
     }
   }
 
   public getNode(id) {
-    return this.availableNodes.find(node => node.id === id);
+    return this.unvisitedNodes.find(node => node.id === id);
   }
 
   public addDependency(dependentId, dependencyId) {
@@ -21,13 +23,25 @@ export default class Graph {
   }
 
   public getAvailableNodes(): Set<Node> {
-    return this.availableNodes.filter(
+    return this.unvisitedNodes.filter(
       node => node.dependencies.subtract(this.visitedNodes.map(n => n.id)).isEmpty(),
     ).sortBy(node => node.id);
   }
 
   public visitNode(node: Node) {
     this.visitedNodes = this.visitedNodes.add(node);
-    this.availableNodes = this.availableNodes.remove(node);
+    this.unvisitedNodes = this.unvisitedNodes.remove(node);
+  }
+
+  public startNode(node: Node) {
+    this.inProgressNodes = this.inProgressNodes.add(node);
+    this.unvisitedNodes = this.unvisitedNodes.remove(node);
+  }
+
+  public finishNode(node: Node) {
+    if (this.inProgressNodes.has(node)) {
+      this.visitedNodes = this.visitedNodes.add(node);
+      this.inProgressNodes = this.inProgressNodes.remove(node);
+    }
   }
 }

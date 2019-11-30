@@ -1,16 +1,16 @@
 import { join } from "path";
-import { List, Map } from "immutable";
-import Node from "../src/Node";
-import Graph from "../src/Graph";
+import { List } from "immutable";
 
 import {
   traverseGraph,
   parser,
+  generateGraph,
+  calculateTime,
 } from "../src/sleigh";
 
 describe("day 7 - The Sum of Its Parts", () => {
   describe("part 1", () => {
-    test("should find first available node", () => {
+    test("should traverse the graph", () => {
       const input = List([
         List(["C", "A"]),
         List(["C", "F"]),
@@ -20,7 +20,8 @@ describe("day 7 - The Sum of Its Parts", () => {
         List(["D", "E"]),
         List(["F", "E"]),
       ]);
-      expect(traverseGraph(input)).toEqual("CABDFE");
+      const graph = generateGraph(input);
+      expect(traverseGraph(graph)).toEqual("CABDFE");
     });
     test("should parse the simple file", async () => {
       const file = join(__dirname, "testfiles", "simpleInput.txt");
@@ -38,27 +39,31 @@ describe("day 7 - The Sum of Its Parts", () => {
     test("input question", async () => {
       const file = join(__dirname, "testfiles", "input.txt");
       const parsedFile = await parser(file);
-      expect(traverseGraph(parsedFile)).toEqual("JDEKPFABTUHOQSXVYMLZCNIGRW");
+      const graph = generateGraph(parsedFile);
+      expect(traverseGraph(graph)).toEqual("JDEKPFABTUHOQSXVYMLZCNIGRW");
     });
   });
 
-  describe.skip("part 2", () => {
-    // test("should react polymer from dabAcCaCBAcCcaDA", () => {
-    //   const input = List([
-    //     Map({ id: 0, x: 1, y: 1 }),
-    //     Map({ id: 1, x: 1, y: 6 }),
-    //     Map({ id: 2, x: 8, y: 3 }),
-    //     Map({ id: 3, x: 3, y: 4 }),
-    //     Map({ id: 4, x: 5, y: 5 }),
-    //     Map({ id: 5, x: 8, y: 9 }),
-    //   ]);
-    //   expect(countSafestRegionsArea(input, 32)).toEqual(16);
-    // });
+  describe("part 2", () => {
+    test("should find the time to complete the graph with 2 workers", () => {
+      const input = List([
+        List(["C", "A"]),
+        List(["C", "F"]),
+        List(["A", "B"]),
+        List(["A", "D"]),
+        List(["B", "E"]),
+        List(["D", "E"]),
+        List(["F", "E"]),
+      ]);
+      const graph = generateGraph(input);
+      expect(calculateTime(graph, 2, 0)).toEqual(15);
+    });
 
-    // test.skip("input question", async () => {
-    //   const file = join(__dirname, "testfiles", "input.txt");
-    //   const parsedFile = await parser(file);
-    //   expect(countSafestRegionsArea(parsedFile, 10000)).toEqual(46667);
-    // });
+    test("input question", async () => {
+      const file = join(__dirname, "testfiles", "input.txt");
+      const parsedFile = await parser(file);
+      const graph = generateGraph(parsedFile);
+      expect(calculateTime(graph, 5, 60)).toEqual(1048);
+    });
   });
 });

@@ -1,19 +1,15 @@
-import { List, Map, Set } from "immutable";
+import { List, Range } from "immutable";
 import { promises as fs } from "fs";
 
+// eslint-disable-next-line no-unused-vars
 import Node from "./Node";
 import Graph from "./Graph";
+import Worker from "./Worker";
 
-const traverseGraph = (dependencies): string => {
+const traverseGraph = (graph): string => {
   let traversedNodes: List<Node> = List();
-  const graph: Graph = new Graph();
-  dependencies.flatten().forEach(s => graph.addNode(s));
 
-  dependencies.forEach(
-    ([dependencyId, dependentId]) => graph.addDependency(dependentId, dependencyId),
-  );
-  // const x = graph.getAvailableNodes().first();
-  while (graph.getAvailableNodes().size > 0) {
+  while (graph.getAvailableNodes().size) {
     const nextNode: Node = graph.getAvailableNodes().first();
     traversedNodes = traversedNodes.push(nextNode);
     graph.visitNode(nextNode);
@@ -28,7 +24,40 @@ const parser = async (filePath: string) => {
     .map(s => List(s.match(/Step (.*) must be finished before step (.*) can begin./)).shift());
 };
 
+const generateGraph = (dependencies): Graph => {
+  const graph: Graph = new Graph();
+  dependencies.flatten().forEach(s => graph.addNode(s));
+
+  dependencies.forEach(
+    ([dependencyId, dependentId]) => graph.addDependency(dependentId, dependencyId),
+  );
+  return graph;
+};
+
+const calculateTime = (graph: Graph, workerCount: number, taskDelay: number): number => {
+  let tickCount = 0;
+  let workers: List<Worker> = List();
+  Range(0, workerCount).forEach(() => {
+    workers = workers.push(new Worker());
+  });
+
+  while (graph.unvisitedNodes.size + graph.inProgressNodes.size) {
+    workers.forEach(worker => worker.tick());
+    const availableWorkers = workers.filter(worker => worker.isAvailable());
+    const availableTasks = graph.getAvailableNodes();
+    availableWorkers.forEach(worker => graph.finishNode(worker.task));
+    availableWorkers.zip(availableTasks).forEach(([worker, task]) => {
+      graph.startNode(task);
+      worker.addTask(task, taskDelay);
+    });
+    tickCount += 1;
+  }
+  return tickCount;
+};
+
 export {
   traverseGraph,
   parser,
+  generateGraph,
+  calculateTime,
 };
