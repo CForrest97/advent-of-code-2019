@@ -19,7 +19,7 @@ const countSleepingMinutes = logs => {
   return guards;
 };
 
-const strategy1 = logs => {
+const strategy1 = (logs): number => {
   let guards: Map<number, Guard> = countSleepingMinutes(logs);
   guards = guards.sortBy(guard => guard.getTotalSleepingMinutes());
   const longestSleeper: Guard = guards.last();
