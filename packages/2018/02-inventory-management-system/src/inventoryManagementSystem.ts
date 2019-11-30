@@ -11,12 +11,8 @@ const countDuplicates = (id: List<string>) => {
 
 const calculateChecksum = (ids: List<List<string>>): number => {
   const duplicates = ids.map(id => countDuplicates(id));
-  let pairs = 0;
-  let triplets = 0;
-  duplicates.forEach(duplicate => {
-    pairs += duplicate.get("pair") ? 1 : 0;
-    triplets += duplicate.get("triplet") ? 1 : 0;
-  });
+  const pairs = duplicates.filter(duplicate => duplicate.get("pair")).size;
+  const triplets = duplicates.filter(duplicate => duplicate.get("triplet")).size;
   return pairs * triplets;
 };
 
@@ -26,18 +22,18 @@ const parser = async (filePath: string): Promise<List<List<string>>> => {
   return frequencyStrings.map(s => List(s.split("")));
 };
 
-const countDifference = (a: List<string>, b: List<string>): number => a.zip(b).map(
-  ([c1, c2]) => (c1 !== c2 ? 1 : 0),
-).reduce((total, x) => total + x, 0);
+const countDifference = (a: List<string>, b: List<string>): number => a.zip(b)
+  .filter(([c1, c2]) => c1 !== c2)
+  .size;
 
 const findSimilarIds = (ids: List<List<string>>): List<List<string>> => {
-  const pairs = ids.map(id1 => ids.map(id2 => List([id1, id2]))).flatten(1);
+  const pairs = ids.flatMap(id1 => ids.map(id2 => List.of(id1, id2)));
   return pairs.find(([id1, id2]) => countDifference(id1, id2) === 1);
 };
 
 const findCommonCharacters = (ids: List<List<string>>): string => {
   const [id1, id2] = findSimilarIds(ids);
-  return id1.zip(id2).reduce((s, [c1, c2]) => s.concat(c1 === c2 ? c1 : ""), "");
+  return id1.zip(id2).filter(([c1, c2]) => c1 === c2).map(arr => arr[0]).join("");
 };
 
 export {

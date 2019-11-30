@@ -18,7 +18,7 @@ const calculatePlots = claim => {
 const findOverlappingPlots = claims => {
   let overlappingPlots = Set();
   let plots = Set();
-  const claimedPlots = claims.map(claim => calculatePlots(claim)).flatten(1);
+  const claimedPlots = claims.flatMap(claim => calculatePlots(claim));
   claimedPlots.forEach(claimedPlot => {
     if (plots.has(claimedPlot)) {
       overlappingPlots = overlappingPlots.add(claimedPlot);

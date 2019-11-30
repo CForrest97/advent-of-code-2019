@@ -11,13 +11,13 @@ const reducePolymer = poly => {
       polymer = polymer.delete(index + 1);
       polymer = polymer.delete(index);
       index -= 2;
-      index = index < -1 ? -1 : index;
+      index = Math.max(-1, index);
     }
   }
   return polymer;
 };
 
-const calculateReductionLength = polymer => reducePolymer(polymer).count();
+const calculateReductionLength = polymer => reducePolymer(polymer).size;
 
 const parser = async (filePath: string) => {
   const contents: Buffer = await fs.readFile(filePath);

@@ -1,50 +1,36 @@
-import { List, Map, Range } from "immutable";
+import { List, Map } from "immutable";
 import { promises as fs } from "fs";
+import Guard from "./Guard";
 
 const countSleepingMinutes = logs => {
-  let currentGuard;
+  let guards: Map<number, Guard> = Map();
+  let currentGuardId;
   let sleepTime;
-  let guards = List();
-  logs.forEach(element => {
-    if (element.get("action") === "begins shift") {
-      currentGuard = element.get("number");
-      if (!guards.find(guard => guard.get("id") === element.get("number"))) {
-        guards = guards.push(Map({ id: element.get("number"), minutes: List() }));
-      }
-    } else if (element.get("action") === "falls asleep") {
-      sleepTime = element.get("number");
-    } else if (element.get("action") === "wakes up") {
-      const guardIndex = guards.findIndex(guard => guard.get("id") === currentGuard);
-      guards = guards.update(guardIndex, guard => guard.update("minutes", minutes => minutes.concat(Range(sleepTime, element.get("number")))));
+  logs.forEach(log => {
+    if (log.get("action") === "begins shift") {
+      currentGuardId = log.get("number");
+      guards = guards.update(currentGuardId, guard => guard || new Guard(currentGuardId));
+    } else if (log.get("action") === "falls asleep") {
+      sleepTime = log.get("number");
+    } else if (log.get("action") === "wakes up") {
+      guards.get(currentGuardId).addMinutes(sleepTime, log.get("number"));
     }
   });
   return guards;
 };
 
-const processGuard = guard => {
-  const maxOccurances = guard.get("minutes").countBy(x => x).max();
-  return Map({
-    id: guard.get("id"),
-    count: guard.get("minutes").count(),
-    maxOccurances,
-    mode: guard.get("minutes").countBy(x => x).findKey(value => value === maxOccurances),
-  });
-};
-
 const strategy1 = logs => {
-  let guards = countSleepingMinutes(logs);
-  guards = guards.map(guard => processGuard(guard));
-  guards = guards.sort((a, b) => b.get("count") - a.get("count"));
-  const longestSleeper = guards.first();
-  return longestSleeper.get("id") * longestSleeper.get("mode");
+  let guards: Map<number, Guard> = countSleepingMinutes(logs);
+  guards = guards.sortBy(guard => guard.getTotalSleepingMinutes());
+  const longestSleeper: Guard = guards.last();
+  return longestSleeper.getId() * longestSleeper.getSleepiestMinute();
 };
 
 const strategy2 = logs => {
-  let guards = countSleepingMinutes(logs);
-  guards = guards.map(guard => processGuard(guard));
-  guards = guards.sort((a, b) => b.get("maxOccurances") - a.get("maxOccurances"));
-  const mostRegularSleeper = guards.first();
-  return mostRegularSleeper.get("id") * mostRegularSleeper.get("mode");
+  let guards: Map<number, Guard> = countSleepingMinutes(logs);
+  guards = guards.sortBy(guard => guard.getMinute(guard.getSleepiestMinute()));
+  const longestSleeper: Guard = guards.last();
+  return longestSleeper.getId() * longestSleeper.getSleepiestMinute();
 };
 
 const parser = async (filePath: string) => {
@@ -58,11 +44,11 @@ const parser = async (filePath: string) => {
       : s.match(/.*:(.*) .*/);
 
     return Map({
-      "date-time": dateTime,
+      dateTime,
       action,
       number: parseInt(number[1], 10),
     });
-  }).sort((a, b) => a.get("date-time").toString().localeCompare(b.get("date-time").toString()));
+  }).sortBy(log => log.get("dateTime"));
 };
 
 export {

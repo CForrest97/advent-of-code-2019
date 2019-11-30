@@ -17,7 +17,7 @@ const calculateFrequencyFoundTwice = (frequencies: List<number>): number => {
   let index: number = 0;
 
   while (true) {
-    const frequency: number = frequencies.get(index % frequencies.count());
+    const frequency: number = frequencies.get(index % frequencies.size);
     total += frequency;
     if (viewedFrequencies.has(total)) return total;
     viewedFrequencies = viewedFrequencies.add(total);
