@@ -26,7 +26,7 @@ const parser = async (filePath: string) => {
   const lines = List(contents.toString().split("\n"));
   let positions: List<Vector> = List();
   let velocities: List<Vector> = List();
-  lines.map(line => {
+  lines.forEach(line => {
     const [, xPosition, yPosition, xVelocity, yVelocity] = line.match(/position=<(.*), (.*)> velocity=<(.*), (.*)>/);
     positions = positions.push(new Vector(parseInt(xPosition, 10), parseInt(yPosition, 10)));
     velocities = velocities.push(new Vector(parseInt(xVelocity, 10), parseInt(yVelocity, 10)));

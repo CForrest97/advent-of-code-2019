@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import Vector from "./Vector";
 
 export default class Node {

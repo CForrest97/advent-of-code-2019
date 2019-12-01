@@ -1,7 +1,7 @@
 import { List, Repeat } from "immutable";
 
+// eslint-disable-next-line no-unused-vars
 import Star from "./Star";
-import Vector from "./Vector";
 
 export default class StarField {
   private stars: List<Star> = List();
