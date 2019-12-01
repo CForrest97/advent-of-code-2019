@@ -16,12 +16,12 @@ const recursivelySumRocketFuel = (input: List<number>): number => input
       fuelRequired = calculateFuelRequred(fuelRequired);
     }
     return totalFuelRequired;
-  }).reduce((subtotal, x) => subtotal + x, 0);
+  }).reduce((subtotal: number, fuel: number) => subtotal + fuel);
 
 const parser = async (filePath: string): Promise<List<number>> => {
   const contents: Buffer = await fs.readFile(filePath);
-  const frequencyStrings = List(contents.toString().split("\n"));
-  return frequencyStrings.map(n => parseInt(n, 10));
+  const masses = List(contents.toString().split("\n"));
+  return masses.map(n => parseInt(n, 10));
 };
 
 export {
