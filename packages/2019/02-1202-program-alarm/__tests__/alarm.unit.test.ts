@@ -11,7 +11,7 @@ describe("day 2 - 1202 Program Alarm", () => {
   describe("part 1", () => {
     test("should program the alarm with 1, 0, 0, 0, 99", () => {
       const input = List([1, 0, 0, 0, 99]);
-      expect(gravityAssist(input).get(0)).toBe(2);
+      expect(gravityAssist(input, 0, 0)).toBe(2);
     });
 
     test("should parse the input with 1,0,0,0,99", async () => {
@@ -23,7 +23,7 @@ describe("day 2 - 1202 Program Alarm", () => {
     test("input question", async () => {
       const file = join(__dirname, "testfiles", "input.txt");
       const parsedFile = await parser(file);
-      expect(gravityAssist(parsedFile).get(0)).toEqual(4570637);
+      expect(gravityAssist(parsedFile)).toEqual(4570637);
     });
   });
 
