@@ -12,7 +12,7 @@ export default class Node {
   }
 
   public tick() {
-    this.position.addVector(this.velocity);
+    this.position = this.position.addVector(this.velocity);
   }
 
   public getPosition(): Vector {
