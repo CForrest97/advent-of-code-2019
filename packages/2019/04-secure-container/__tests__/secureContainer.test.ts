@@ -6,12 +6,12 @@ import {
 describe("day 4", () => {
   describe("part 1", () => {
     test("input question", () => {
-      expect(getValidPasswords1(357253, 892942)).toEqual(530);
+      expect(getValidPasswords1(357253, 892942).size).toEqual(530);
     });
   });
   describe("part 2", () => {
     test("input question", () => {
-      expect(getValidPasswords2(357253, 892942)).toEqual(324);
+      expect(getValidPasswords2(357253, 892942).size).toEqual(324);
     });
   });
 });
