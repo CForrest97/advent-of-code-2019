@@ -1,4 +1,4 @@
-import { Set } from "immutable";
+import { Set, List } from "immutable";
 import Node from "./Node";
 
 export default class Graph {
@@ -7,6 +7,10 @@ export default class Graph {
   inProgressNodes: Set<Node> = Set();
 
   private visitedNodes: Set<Node> = Set();
+
+  public findNode(id) {
+    return List(this.unvisitedNodes).filter(node => node.id === id);
+  }
 
   public addNode(id) {
     if (!this.getNode(id)) {
