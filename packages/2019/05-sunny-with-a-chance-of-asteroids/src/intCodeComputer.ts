@@ -31,10 +31,11 @@ const opcodes = Map.of(
   8, Map({ updateIntCode: isEqual, updateIndex: addFour }),
 );
 
-const compute = (i: List<number>, inputValue: number) => {
+const compute = (i: List<number>, inputValues: List<number>) => {
   let intCodes = i;
   let outputs = List();
   let index = 0;
+  let inputValuesIndex = 0;
 
   while (intCodes.skip(index).first() !== 99) {
     let [instructionCode, parameter1, parameter2, parameter3] = intCodes.skip(index);
@@ -46,11 +47,17 @@ const compute = (i: List<number>, inputValue: number) => {
       instructionCode %= 10;
     }
 
-    intCodes = opcodes.get(instructionCode).get("updateIntCode")(intCodes, parameter1, parameter2, parameter3, inputValue);
+    intCodes = opcodes.get(instructionCode).get("updateIntCode")(intCodes, parameter1, parameter2, parameter3, inputValues.get(inputValuesIndex));
     index = opcodes.get(instructionCode).get("updateIndex")(index, intCodes, parameter1, parameter2);
 
     if (instructionCode === 4) {
       outputs = outputs.push(intCodes.get(parameter1));
+    }
+    if (instructionCode === 3) {
+      inputValuesIndex += 1;
+      if (inputValues.size < inputValuesIndex) {
+        return outputs;
+      }
     }
   }
   return outputs;
