@@ -1,22 +1,18 @@
-import { List, Set } from "immutable";
+import { List } from "immutable";
 import { compute } from "../../05-sunny-with-a-chance-of-asteroids/src/intCodeComputer";
 import permutate from "../../../utils/src/utils";
 
 const amplify = (intcodes: List<number>, phaseSettings: List<number>): number => {
-  let amplifier0Inputs = List.of(phaseSettings.get(0), 0);
-  let amplifier1Inputs = List.of(phaseSettings.get(1));
-  let amplifier2Inputs = List.of(phaseSettings.get(2));
-  let amplifier3Inputs = List.of(phaseSettings.get(3));
-  let amplifier4Inputs = List.of(phaseSettings.get(4));
-
-  while (amplifier0Inputs.size === Set(amplifier0Inputs).size) {
-    amplifier1Inputs = amplifier1Inputs.push(compute(intcodes, amplifier0Inputs).last());
-    amplifier2Inputs = amplifier2Inputs.push(compute(intcodes, amplifier1Inputs).last());
-    amplifier3Inputs = amplifier3Inputs.push(compute(intcodes, amplifier2Inputs).last());
-    amplifier4Inputs = amplifier4Inputs.push(compute(intcodes, amplifier3Inputs).last());
-    amplifier0Inputs = amplifier0Inputs.push(compute(intcodes, amplifier4Inputs).last());
+  let output: List<number> = List();
+  let previousOutput: List<number>;
+  while (!output.equals(previousOutput)) {
+    previousOutput = output;
+    output = output.unshift(0);
+    for (let index = 0; index < phaseSettings.size; index += 1) {
+      output = compute(intcodes, output.unshift(phaseSettings.get(index)));
+    }
   }
-  return amplifier0Inputs.last();
+  return output.last();
 };
 
 const maximiseAmplification = (intcodes: List<number>, phaseValues: List<number>): number => (
