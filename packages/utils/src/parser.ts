@@ -6,9 +6,10 @@ const lineReader = async (filePath: string): Promise<List<string>> => {
   return List(buffer.toString().split("\n"));
 };
 
-const decimalReader = async (filePath: string): Promise<List<number>> => (
-  await lineReader(filePath)
-).map(n => parseInt(n, 10));
+const decimalReader = async (filePath: string): Promise<List<number>> => {
+  const buffer: Buffer = await fs.readFile(filePath);
+  return List(buffer.toString().split(",")).map(n => parseInt(n, 10));
+};
 
 export {
   lineReader,
