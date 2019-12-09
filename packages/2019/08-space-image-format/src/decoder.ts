@@ -17,8 +17,7 @@ const parser = async (file: string, layerSize: number): Promise<List<List<number
 const checksum = (layers: List<List<number>>): number => {
   const leastZerosLayer: Map<number, number> = layers
     .map((layer: List<number>) => layer.countBy(x => x))
-    .sortBy((layer: Map<number, number>) => layer.get(0))
-    .first();
+    .minBy((layer: Map<number, number>) => layer.get(0));
 
   return leastZerosLayer.get(1) * leastZerosLayer.get(2);
 };

@@ -29,31 +29,56 @@ const opcodes = Map.of(
   6, Map({ updateIntCode: identity, updateIndex: jumpIfFalse }),
   7, Map({ updateIntCode: isLessThan, updateIndex: addFour }),
   8, Map({ updateIntCode: isEqual, updateIndex: addFour }),
+  9, Map({ updateIntCode: identity, updateIndex: addTwo }),
 );
 
+const getParameterModes = (instructionCode: number): List<number> => {
+  let parameterModes = List();
+  let code = Math.floor(instructionCode / 100);
+  for (let parameterIndex = 0; parameterIndex < 3; parameterIndex += 1) {
+    parameterModes = parameterModes.push(code % 10);
+    code = Math.floor(code / 10);
+  }
+  return parameterModes;
+};
+
 const compute = (i: List<number>, inputValues: List<number>) => {
-  let intCodes = i;
+  let relativeBase = 0;
+  let intCodes: List<number> = i;
   let outputs = List();
   let index = 0;
   let inputValuesIndex = 0;
 
   while (intCodes.skip(index).first() !== 99) {
-    let [instructionCode, parameter1, parameter2, parameter3] = intCodes.skip(index);
+    let [instructionCode, parameter1, parameter2, parameter3] = intCodes.skip(index).take(4);
 
-    if (instructionCode > 10) {
-      if (instructionCode % 1000 >= 100) parameter1 = index + 1;
-      if (instructionCode % 10000 >= 1000) parameter2 = index + 2;
-      if (instructionCode % 100000 >= 10000) parameter3 = index + 3;
-      instructionCode %= 10;
+    const parameterModes = getParameterModes(instructionCode);
+
+    if (parameterModes.get(0) === 1) {
+      parameter1 = index + 1;
+    } else if (parameterModes.get(0) === 2) {
+      parameter1 += relativeBase;
     }
+    if (parameterModes.get(1) === 1) {
+      parameter2 = index + 2;
+    } else if (parameterModes.get(1) === 2) {
+      parameter2 += relativeBase;
+    }
+    if (parameterModes.get(2) === 1) {
+      parameter3 = index + 3;
+    } else if (parameterModes.get(2) === 2) {
+      parameter3 += relativeBase;
+    }
+    instructionCode %= 10;
 
     intCodes = opcodes.get(instructionCode).get("updateIntCode")(intCodes, parameter1, parameter2, parameter3, inputValues.get(inputValuesIndex));
     index = opcodes.get(instructionCode).get("updateIndex")(index, intCodes, parameter1, parameter2);
 
     if (instructionCode === 4) {
       outputs = outputs.push(intCodes.get(parameter1));
-    }
-    if (instructionCode === 3) {
+    } else if (instructionCode === 9) {
+      relativeBase += intCodes.get(parameter1);
+    } else if (instructionCode === 3) {
       inputValuesIndex += 1;
       if (inputValues.size < inputValuesIndex) {
         return outputs;
@@ -72,4 +97,5 @@ const parser = async (filePath: string): Promise<List<number>> => {
 export {
   compute,
   parser,
+  getParameterModes,
 };
