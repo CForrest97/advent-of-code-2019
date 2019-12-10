@@ -31,4 +31,12 @@ export default class Vector {
   public getManhattanDistance(v2: Vector): number {
     return Math.abs(this.x - v2.getX()) + Math.abs(this.getY() - v2.getY());
   }
+
+  public subtractVector(v2: Vector) {
+    return new Vector(this.x - v2.getX(), this.y - v2.getY());
+  }
+
+  public getAngleFromVertical(): number {
+    return (Math.atan2(this.x, -this.y) + 2 * Math.PI) % (2 * Math.PI);
+  }
 }
