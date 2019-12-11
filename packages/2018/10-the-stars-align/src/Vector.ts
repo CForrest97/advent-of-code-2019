@@ -39,4 +39,8 @@ export default class Vector {
   public getAngleFromVertical(): number {
     return (Math.atan2(this.x, -this.y) + 2 * Math.PI) % (2 * Math.PI);
   }
+
+  public toString(): string {
+    return `${this.x},${this.y}`;
+  }
 }
