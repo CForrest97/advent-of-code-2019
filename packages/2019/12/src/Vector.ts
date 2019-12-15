@@ -35,11 +35,7 @@ export default class Vector {
   }
 
   public addVector(v2: Vector) {
-    return new Vector(
-      this.getX() + v2.getX(),
-      this.getY() + v2.getY(),
-      this.getZ() + v2.getZ(),
-    );
+    return new Vector(...this.components.zip(v2.components).map(([a, b]) => a + b));
   }
 
   // public subtractVector(v2: Vector) {
